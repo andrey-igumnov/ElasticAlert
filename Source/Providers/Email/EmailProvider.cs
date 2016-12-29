@@ -103,20 +103,19 @@ namespace ElasticAlert.Providers.Email
         /// <returns>Mail message</returns>
         private MailMessage PrepareMailMessage(IMessage message)
         {
-            using (var mailMessage = new MailMessage())
+            var mailMessage = new MailMessage();
+
+            foreach (var mailRecipient in this.mailRecipients)
             {
-                foreach (var mailRecipient in this.mailRecipients)
-                {
-                    mailMessage.To.Add(mailRecipient);
-                }
-
-                mailMessage.Subject = message.Subject;
-                mailMessage.Body = message.Body;
-                mailMessage.Priority = ToMailPriority(message.Priority);
-                mailMessage.From = this.sender;
-
-                return mailMessage;
+                mailMessage.To.Add(mailRecipient);
             }
+
+            mailMessage.Subject = message.Subject;
+            mailMessage.Body = message.Body;
+            mailMessage.Priority = ToMailPriority(message.Priority);
+            mailMessage.From = this.sender;
+
+            return mailMessage;
         }
     }
 }
