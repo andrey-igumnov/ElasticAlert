@@ -57,7 +57,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Message.cs" />
+    <Compile Include="Email\EmailProvider.cs" />
+    <Compile Include="IMessage.cs" />
     <Compile Include="IProvider.cs" />
+    <Compile Include="MessagePriority.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

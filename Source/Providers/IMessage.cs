@@ -9,5 +9,19 @@ namespace ElasticAlert.Providers
     /// </summary>
     public interface IMessage
     {
+        /// <summary>
+        /// Gets the message header
+        /// </summary>
+        string Subject { get; }
+
+        /// <summary>
+        /// Gets the massage body
+        /// </summary>
+        string Body { get; }
+
+        /// <summary>
+        /// Gets the message priority
+        /// </summary>
+        MessagePriority Priority { get; }
     }
 }
