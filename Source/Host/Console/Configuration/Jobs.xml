@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<castle>
+  <components>
+    <component id="selfTestAlertmessage"
+               type="ElasticAlert.Providers.Message, ElasticAlert.Providers"
+               lifestyle="transient">
+      <parameters>
+        <subject>Alert!</subject>
+        <templatePath>Templates\AlertEmail.html</templatePath>
+        <priority>High</priority>
+        <isBodyHtml>true</isBodyHtml>
+      </parameters>
+    </component>
+
+    <component id="selfTestNormalmessage"
+               type="ElasticAlert.Providers.Message, ElasticAlert.Providers"
+               lifestyle="transient">
+      <parameters>
+        <subject>Info</subject>
+        <templatePath>Templates\NormalEmail.html</templatePath>
+        <isBodyHtml>true</isBodyHtml>
+      </parameters>
+    </component>
+
+    <component id="thresholdJob"
+               type="ElasticAlert.Jobs.ThresholdJob, ElasticAlert">
+      <parameters>
+        <JobId>SelfTest</JobId>
+        <DataClient>${elasticsearchDataClient}</DataClient>
+        <Provider>${emailProvider}</Provider>
+        <AlertMessage>${selfTestAlertmessage}</AlertMessage>
+        <NormalMessage>${selfTestNormalmessage}</NormalMessage>
+        <Query>Code:200</Query>
+        <TimeShift>00:01:00</TimeShift>
+        <Period>00:10:00</Period>
+        <InvocationPeriod>00:00:05</InvocationPeriod>
+        <TimeZone>UTC</TimeZone>
+        <Repeat>3</Repeat>
+        <minimumValue>260</minimumValue>
+      </parameters>
+    </component>
+
+    <component id="scheduler"
+               type="ElasticAlert.Scheduler, ElasticAlert">
+      <parameters>
+        <runningJobs>
+          <list>
+            <item>${thresholdJob}</item>
+          </list>
+        </runningJobs>
+      </parameters>
+    </component>
+  </components>
+</castle>

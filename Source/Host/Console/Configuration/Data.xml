@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<castle>
+  <components>
+    <component id="elasticsearchDataClient"
+               type="ElasticAlert.Data.ElasticsearchClient, ElasticAlert.Data">
+      <parameters>
+        <serviceUri>http://elasticsearch:9200/</serviceUri>
+        <timeFieldName></timeFieldName>
+      </parameters>
+    </component>
+  </components>
+</castle>

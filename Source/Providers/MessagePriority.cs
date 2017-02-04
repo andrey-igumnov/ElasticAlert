@@ -24,6 +24,9 @@ namespace ElasticAlert.Providers
         /// </summary>
         High,
 
+        /// <summary>
+        /// The message has normal priority
+        /// </summary>
         Default = Normal,
     }
 }
