@@ -124,6 +124,7 @@ namespace ElasticAlert.Providers.Email
         /// <param name="message">Alert message template</param>
         /// <param name="data">Message data</param>
         /// <returns>Mail message</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Will be refactored later")]
         private MailMessage PrepareMailMessage(IMessage message, IDictionary<string, object> data)
         {
             var mailMessage = new MailMessage();

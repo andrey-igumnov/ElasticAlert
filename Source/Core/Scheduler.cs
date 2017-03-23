@@ -25,6 +25,7 @@ namespace ElasticAlert
         /// Initializes a new instance of the <see cref="Scheduler"/> class with jobs collection
         /// </summary>
         /// <param name="runningJobs">Jobs collection</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Will be refactored later")]
         public Scheduler(ICollection<IJob> runningJobs)
         {
             if (runningJobs == null)

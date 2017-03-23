@@ -17,6 +17,7 @@ namespace ElasticAlert.Host
         /// <summary>
         /// Main function
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Will be refactored later")]
         public static void Main()
         {
             using (var scheduler = new WindsorContainer().Install(Configuration.FromAppConfig(), FromAssembly.This()).Resolve<Scheduler>())
