@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Dictionary>
+  <Words>
+    <Recognized>
+      <Word>Elasticsearch</Word>
+    </Recognized>
+    <Compound>
+      <Term CompoundAlternate="ElasticSearchClient">ElasticsearchClient</Term>
+    </Compound>
+  </Words>
+</Dictionary>

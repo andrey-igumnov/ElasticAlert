@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<castle>
+  <components>
+    <component id="smtpClient"
+               type="ElasticAlert.Providers.Email.SmtpClientData, ElasticAlert.Providers">
+      <parameters>
+        <host></host>
+        <port></port>
+        <isDefaultCredentialsUsed></isDefaultCredentialsUsed>
+        <isSslEnabled></isSslEnabled>
+        <username></username>
+        <password></password>
+      </parameters>
+    </component>
+
+    <component id="emailProvider"
+               type="ElasticAlert.Providers.Email.EmailProvider, ElasticAlert.Providers">
+      <parameters>
+        <smtpClientData>${smtpClient}</smtpClientData>
+        <sendAsync>false</sendAsync>
+        <sender></sender>
+        <mailRecipients>
+          <list>
+            <item></item>
+          </list>
+        </mailRecipients>
+      </parameters>
+    </component>
+  </components>
+</castle>

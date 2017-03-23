@@ -5,10 +5,7 @@
 
 namespace ElasticAlert.Tests
 {
-    using System.Collections.ObjectModel;
-    using System.Net;
-    using System.Net.Mail;
-    using System.Threading.Tasks;
+    using System.Collections.Generic;
 
     using NUnit.Framework;
 
@@ -28,47 +25,33 @@ namespace ElasticAlert.Tests
         [Ignore("Integration test")]
         public static void SendMessageIntegrationTest()
         {
-            var client = new SmtpClient
-            {
-                Host = "smtp host",
-                Port = 587,
-                EnableSsl = true,
-                UseDefaultCredentials = false,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                Credentials = new NetworkCredential("login", "password"),
-            };
+            var client = new SmtpClientData("smtpHost", 587);
 
             var emailProvider = new EmailProvider(
                 client,
-                new MailAddress("from@example.com"),
-                new Collection<MailAddress> { new MailAddress("to@example.com") });
+                false,
+                "from@example.com",
+                new List<string> { "to@example.com" });
 
-            emailProvider.Send(new Message("Subject", "Body", MessagePriority.Low));
+            emailProvider.Send(new Message("Subject", "Body"), new Dictionary<string, object>());
         }
 
         /// <summary>
-        /// Send message asynchroniusly integration test
+        /// Send message asynchronously integration test
         /// </summary>
         [Test]
         [Ignore("Integration test")]
-        public static async Task SendMessageAsyncIntegrationTest()
+        public static void SendMessageAsyncIntegrationTest()
         {
-            var client = new SmtpClient
-            {
-                Host = "smtp host",
-                Port = 587,
-                EnableSsl = true,
-                UseDefaultCredentials = false,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                Credentials = new NetworkCredential("login", "password"),
-            };
+            var client = new SmtpClientData("smtpHost", 587);
 
             var emailProvider = new EmailProvider(
                 client,
-                new MailAddress("from@example.com"),
-                new Collection<MailAddress> { new MailAddress("to@example.com") });
+                true,
+                "from@example.com",
+                new List<string> { "to@example.com" });
 
-            await emailProvider.SendAsync(new Message("Subject async", "Body async", MessagePriority.Low));
+            emailProvider.Send(new Message("Subject async", "Body async"), new Dictionary<string, object>());
         }
     }
 }

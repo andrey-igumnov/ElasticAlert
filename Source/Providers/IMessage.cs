@@ -10,17 +10,22 @@ namespace ElasticAlert.Providers
     public interface IMessage
     {
         /// <summary>
-        /// Gets the message header
+        /// Gets the subject of the message
         /// </summary>
         string Subject { get; }
 
         /// <summary>
-        /// Gets the massage body
+        /// Gets template path of the message
         /// </summary>
-        string Body { get; }
+        string TemplatePath { get; }
 
         /// <summary>
-        /// Gets the message priority
+        /// Gets a value indicating whether the message body is in HTML
+        /// </summary>
+        bool IsBodyHtml { get; }
+
+        /// <summary>
+        /// Gets the priority of the message
         /// </summary>
         MessagePriority Priority { get; }
     }

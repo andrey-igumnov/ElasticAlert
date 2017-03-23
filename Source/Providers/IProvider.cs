@@ -5,7 +5,7 @@
 
 namespace ElasticAlert.Providers
 {
-    using System.Threading.Tasks;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Represents provider interface
@@ -15,14 +15,8 @@ namespace ElasticAlert.Providers
         /// <summary>
         /// Sends the specified message
         /// </summary>
-        /// <param name="message">Alert message</param>
-        void Send(IMessage message);
-
-        /// <summary>
-        /// Sends the specified message as an asynchronous operation
-        /// </summary>
-        /// <param name="message">>Alert message</param>
-        /// <returns>The task object representing the asynchronous operation</returns>
-        Task SendAsync(IMessage message);
+        /// <param name="message">Alert message template</param>
+        /// <param name="data">Message data</param>
+        void Send(IMessage message, IDictionary<string, object> data);
     }
 }

@@ -6,9 +6,11 @@
 namespace ElasticAlert.Providers.Email
 {
     using System;
-    using System.Collections.ObjectModel;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Net;
     using System.Net.Mail;
-    using System.Threading.Tasks;
+    using DotLiquid;
 
     /// <summary>
     /// Represents email provider
@@ -16,31 +18,37 @@ namespace ElasticAlert.Providers.Email
     public sealed class EmailProvider : IProvider
     {
         /// <summary>
-        /// SMTP client
+        /// SMTP client data
         /// </summary>
-        private readonly SmtpClient smtpClient;
+        private readonly SmtpClientData smtpClientData;
 
         /// <summary>
         /// Email sender
         /// </summary>
-        private readonly MailAddress sender;
+        private readonly string sender;
 
         /// <summary>
         /// Email recipients
         /// </summary>
-        private readonly Collection<MailAddress> mailRecipients;
+        private readonly ICollection<string> mailRecipients;
+
+        /// <summary>
+        /// Specifies the value whether message sends asynchronously
+        /// </summary>
+        private readonly bool sendAsync;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EmailProvider"/> class
         /// </summary>
-        /// <param name="smtpClient">SMTP client</param>
+        /// <param name="smtpClientData">SMTP client data</param>
+        /// <param name="sendAsync">Specifies the value whether message sends asynchronously</param>
         /// <param name="sender">Email sender</param>
         /// <param name="mailRecipients">Email recipients</param>
-        public EmailProvider(SmtpClient smtpClient, MailAddress sender, Collection<MailAddress> mailRecipients)
+        public EmailProvider(SmtpClientData smtpClientData, bool sendAsync, string sender, ICollection<string> mailRecipients)
         {
-            if (smtpClient == null)
+            if (smtpClientData == null)
             {
-                throw new ArgumentNullException(nameof(smtpClient));
+                throw new ArgumentNullException(nameof(smtpClientData));
             }
 
             if (sender == null)
@@ -53,26 +61,40 @@ namespace ElasticAlert.Providers.Email
                 throw new ArgumentNullException(nameof(mailRecipients));
             }
 
-            this.smtpClient = smtpClient;
+            this.smtpClientData = smtpClientData;
             this.sender = sender;
             this.mailRecipients = mailRecipients;
+            this.sendAsync = sendAsync;
         }
 
         /// <inheritdoc/>
-        public void Send(IMessage message)
+        public void Send(IMessage message, IDictionary<string, object> data)
         {
-            using (this.smtpClient)
+            using (var smtpClient = new SmtpClient(this.smtpClientData.Host, this.smtpClientData.Port))
             {
-                this.smtpClient.Send(this.PrepareMailMessage(message));
-            }
-        }
+                smtpClient.EnableSsl = this.smtpClientData.IsSslEnabled;
+                if (this.smtpClientData.IsDefaultCredentialsUsed)
+                {
+                    smtpClient.UseDefaultCredentials = true;
+                }
+                else
+                {
+                    smtpClient.Credentials = new NetworkCredential(this.smtpClientData.UserName, this.smtpClientData.Password);
+                }
 
-        /// <inheritdoc/>
-        public async Task SendAsync(IMessage message)
-        {
-            using (this.smtpClient)
-            {
-                await this.smtpClient.SendMailAsync(this.PrepareMailMessage(message));
+                if (this.smtpClientData.Timeout.HasValue)
+                {
+                    smtpClient.Timeout = (int)this.smtpClientData.Timeout.Value.TotalMilliseconds;
+                }
+
+                if (this.sendAsync)
+                {
+                    smtpClient.SendMailAsync(this.PrepareMailMessage(message, data));
+                }
+                else
+                {
+                    smtpClient.Send(this.PrepareMailMessage(message, data));
+                }
             }
         }
 
@@ -99,9 +121,11 @@ namespace ElasticAlert.Providers.Email
         /// <summary>
         /// Converts <see cref="IMessage"/> to <see cref="MailMessage"/>
         /// </summary>
-        /// <param name="message">Alert message</param>
+        /// <param name="message">Alert message template</param>
+        /// <param name="data">Message data</param>
         /// <returns>Mail message</returns>
-        private MailMessage PrepareMailMessage(IMessage message)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Will be refactored later")]
+        private MailMessage PrepareMailMessage(IMessage message, IDictionary<string, object> data)
         {
             var mailMessage = new MailMessage();
 
@@ -110,10 +134,15 @@ namespace ElasticAlert.Providers.Email
                 mailMessage.To.Add(mailRecipient);
             }
 
+            var messageContent = File.ReadAllText(message.TemplatePath);
+
+            var template = Template.Parse(messageContent);
+
             mailMessage.Subject = message.Subject;
-            mailMessage.Body = message.Body;
+            mailMessage.Body = data == null ? messageContent : template.Render(Hash.FromDictionary(data));
             mailMessage.Priority = ToMailPriority(message.Priority);
-            mailMessage.From = this.sender;
+            mailMessage.From = new MailAddress(this.sender);
+            mailMessage.IsBodyHtml = message.IsBodyHtml;
 
             return mailMessage;
         }
